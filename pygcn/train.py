@@ -31,6 +31,7 @@ def parse_args():
                         help='Number of hidden units.')
     parser.add_argument('--dropout', type=float, default=0.5,
                         help='Dropout rate (1 - keep probability).')
+    parser.add_argument('--save_embedding', default=None, help='Directory for saving embedding, none for no saving')
 
     args = parser.parse_args()
     args.cuda = not args.no_cuda and torch.cuda.is_available()
@@ -85,6 +86,9 @@ if __name__ == '__main__':
     args = parse_args()
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
     if args.cuda:
         torch.cuda.manual_seed(args.seed)
 
@@ -108,9 +112,17 @@ if __name__ == '__main__':
         idx_val = idx_val.cuda()
         idx_test = idx_test.cuda()
 
-    # Train model
+    # Train modelS
     train(features, adj, labels, idx_train, idx_val, model, optimizer, num_epoch = args.epochs)    
     
     # Testing
     test(features, adj, labels, idx_test, model)
+
+    if args.save_embedding is not None:        
+        model.eval()
+        output = model(features, adj)
+        output = output.cpu().detach().numpy()
+        #save embeddings in numpy format file
+        np.save(args.save_embedding, output)
+        print("Embedding saved at {}".format(args.save_embedding))
 

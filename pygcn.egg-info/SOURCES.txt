@@ -1,6 +1,7 @@
 README.md
 setup.py
 pygcn/__init__.py
+pygcn/alignment.py
 pygcn/layers.py
 pygcn/models.py
 pygcn/train.py
