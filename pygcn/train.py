@@ -36,6 +36,9 @@ def parse_args():
     args = parser.parse_args()
     args.cuda = not args.no_cuda and torch.cuda.is_available()
 
+    if args.cuda:
+        torch.cuda.set_device(1)
+
     return args
 
 def train(features, adj, labels, idx_train, idx_val, model, optimizer, num_epoch, print_every = 20, fastmode = False):
